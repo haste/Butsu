@@ -64,8 +64,12 @@ local createSlot = function(id)
 		ResetCursor()
 	end)
 	frame:SetScript("OnClick", function(self)
-		StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION")
-		LootSlot(self:GetID())
+		if ( IsModifiedClick() ) then
+			HandleModifiedItemClick(GetLootSlotLink(self:GetID()))
+		else
+			StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION")
+			LootSlot(self:GetID())
+		end
 	end)
 
 	local iconFrame = CreateFrame("Button", nil, frame)
@@ -198,7 +202,7 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 	local color = ITEM_QUALITY_COLORS[m]
 	self:SetBackdropBorderColor(color.r, color.g, color.b, .8)
 	self:SetHeight((items*iconsize+1)+16)
-	self:SetWidth(w > t and w or t)
+	self:SetWidth(math.max(w, t))
 
 	self:Show()
 end
