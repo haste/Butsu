@@ -60,6 +60,7 @@ local createSlot = function(id)
 		else
 			self.drop:Hide()
 		end
+
 		GameTooltip:Hide()
 		ResetCursor()
 	end)
@@ -71,9 +72,15 @@ local createSlot = function(id)
 			LootSlot(self:GetID())
 		end
 	end)
+	frame:SetScript("OnUpdate", function(self)
+		if ( GameTooltip:IsOwned(self) ) then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetLootItem(self:GetID())
+		end
+		CursorOnUpdate()
+	end)
 
-	local iconFrame = CreateFrame("Button", nil, frame)
-	iconFrame:EnableMouse(true)
+	local iconFrame = CreateFrame("Frame", nil, frame)
 	iconFrame:SetHeight(iconsize)
 	iconFrame:SetWidth(iconsize)
 	iconFrame:ClearAllPoints()
@@ -114,7 +121,7 @@ local createSlot = function(id)
 	drop:SetAlpha(.3)
 	frame.drop = drop
 
-	frame:SetPoint("TOP", addon, 4, (-7+iconsize)-(id*(iconsize+1)))
+	frame:SetPoint("TOP", addon, 4, (-8+iconsize)-(id*iconsize))
 	addon.slots[id] = frame
 	return frame
 end
@@ -201,7 +208,7 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 
 	local color = ITEM_QUALITY_COLORS[m]
 	self:SetBackdropBorderColor(color.r, color.g, color.b, .8)
-	self:SetHeight((items*iconsize+1)+16)
+	self:SetHeight(math.max((items*iconsize)+16), 20)
 	self:SetWidth(math.max(w, t))
 
 	self:Show()
@@ -211,7 +218,7 @@ addon.LOOT_SLOT_CLEARED = function(self, event, slot)
 	addon.slots[slot]:Hide()
 end
 
-addon.LOOT_CLOSED = function(self, event)
+addon.LOOT_CLOSED = function(self)
 	self:Hide()
 	StaticPopup_Hide"CONFIRM_LOOT_DISTRIBUTION"
 
