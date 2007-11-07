@@ -28,6 +28,7 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ---------------------------------------------------------------------------]]
+
 local addon = CreateFrame("Frame", "Butsu")
 local title = addon:CreateFontString(nil, "OVERLAY")
 
@@ -224,11 +225,15 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 end
 
 addon.LOOT_SLOT_CLEARED = function(self, event, slot)
+	if(not self:IsShown()) then return end
+
 	addon.slots[slot]:Hide()
 end
 
 addon.LOOT_CLOSED = function(self)
 	self:Hide()
+	CloseLoot()
+	StaticPopup_Hide("LOOT_BIND")
 	StaticPopup_Hide"CONFIRM_LOOT_DISTRIBUTION"
 
 	for k, v in pairs(self.slots) do
