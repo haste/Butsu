@@ -28,13 +28,56 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ---------------------------------------------------------------------------]]
-local addon = CreateFrame"Frame"
-addon:Hide()
+local addon = CreateFrame("Frame", "Butsu")
+local title = addon:CreateFontString(nil, "OVERLAY")
 
 local print = function(a) ChatFrame1:AddMessage("|cff33ff99Butsu:|r "..a) end
 local iconsize = 22
+local sq, ss, sn
 
-print"Initial write-up, master loot won't work"
+local OnEnter = function(self)
+	local slot = self:GetID()
+	if(LootSlotIsItem(slot)) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetLootItem(slot)
+		CursorUpdate()
+	end
+
+	self.drop:Show()
+	self.drop:SetVertexColor(1, 1, 0)
+end
+
+local OnLeave = function(self)
+	if(self.quality > 1) then
+		local color = ITEM_QUALITY_COLORS[self.quality]
+		self.drop:SetVertexColor(color.r, color.g, color.b)
+	else
+		self.drop:Hide()
+	end
+
+	GameTooltip:Hide()
+	ResetCursor()
+end
+
+local OnClick = function(self)
+	if(IsModifiedClick()) then
+		HandleModifiedItemClick(GetLootSlotLink(self:GetID()))
+	else
+		StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION")
+		ss = self:GetID()
+		sq = self.quality
+		sn = self.name:GetText()
+		LootSlot(ss)
+	end
+end
+
+local OnUpdate = function(self)
+	if(GameTooltip:IsOwned(self)) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetLootItem(self:GetID())
+		CursorOnUpdate()
+	end
+end
 
 local createSlot = function(id)
 	local frame = CreateFrame("Button", nil, addon)
@@ -43,42 +86,10 @@ local createSlot = function(id)
 	frame:SetHeight(iconsize)
 	frame:SetID(id)
 
-	frame:SetScript("OnEnter", function(self)
-		local slot = self:GetID()
-		if(LootSlotIsItem(slot)) then
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-			GameTooltip:SetLootItem(slot)
-			CursorUpdate()
-		end
-		self.drop:Show()
-		self.drop:SetVertexColor(1, 1, 0)
-	end)
-	frame:SetScript("OnLeave", function(self)
-		if(self.quality > 1) then
-			local color = ITEM_QUALITY_COLORS[self.quality]
-			self.drop:SetVertexColor(color.r, color.g, color.b)
-		else
-			self.drop:Hide()
-		end
-
-		GameTooltip:Hide()
-		ResetCursor()
-	end)
-	frame:SetScript("OnClick", function(self)
-		if ( IsModifiedClick() ) then
-			HandleModifiedItemClick(GetLootSlotLink(self:GetID()))
-		else
-			StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION")
-			LootSlot(self:GetID())
-		end
-	end)
-	frame:SetScript("OnUpdate", function(self)
-		if ( GameTooltip:IsOwned(self) ) then
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-			GameTooltip:SetLootItem(self:GetID())
-		end
-		CursorOnUpdate()
-	end)
+	frame:SetScript("OnEnter", OnEnter)
+	frame:SetScript("OnLeave", OnLeave)
+	frame:SetScript("OnClick", OnClick)
+	frame:SetScript("OnUpdate", OnUpdate)
 
 	local iconFrame = CreateFrame("Frame", nil, frame)
 	iconFrame:SetHeight(iconsize)
@@ -126,10 +137,8 @@ local createSlot = function(id)
 	return frame
 end
 
-local title = addon:CreateFontString(nil, "OVERLAY")
 title:SetFontObject(GameTooltipHeaderText)
 title:SetPoint("BOTTOMLEFT", addon, "TOPLEFT", 5, 0)
-addon.title = title
 
 addon:SetParent(UIParent)
 addon:SetPoint("TOP", -200, -50)
@@ -227,6 +236,14 @@ addon.LOOT_CLOSED = function(self)
 	end
 end
 
+addon.OPEN_MASTER_LOOT_LIST = function(self)
+	ToggleDropDownMenu(1, nil, GroupLootDropDown, addon.slots[ss], 0, 0)
+end
+
+addon.UPDATE_MASTER_LOOT_LIST = function(self)
+	IDropDownMenu_Refresh(GroupLootDropDown)
+end
+
 addon:SetScript("OnEvent", function(self, event, ...)
 	self[event](self, event, ...)
 end)
@@ -234,5 +251,23 @@ end)
 addon:RegisterEvent"LOOT_OPENED"
 addon:RegisterEvent"LOOT_SLOT_CLEARED"
 addon:RegisterEvent"LOOT_CLOSED"
+addon:RegisterEvent"OPEN_MASTER_LOOT_LIST"
+addon:RegisterEvent"UPDATE_MASTER_LOOT_LIST"
+addon:Hide()
 
+-- Fuzz
 LootFrame:UnregisterAllEvents()
+UIPanelWindows["Butsu"] = { area = "left", pushable = 7 }
+
+function GroupLootDropDown_GiveLoot()
+	if(sq >= MASTER_LOOT_THREHOLD) then
+		local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[sq].hex..sn..FONT_COLOR_CODE_CLOSE, this:GetText() )
+		if( dialog ) then
+			dialog.data = this.value;
+		end
+	else
+		GiveMasterLoot(ss, this.value)
+	end
+	
+	CloseDropDownMenus()
+end
