@@ -29,7 +29,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ---------------------------------------------------------------------------]]
 
-local addon = CreateFrame("Frame", "Butsu")
+local addon = CreateFrame("Button", "Butsu")
 local title = addon:CreateFontString(nil, "OVERLAY")
 
 local print = function(a) ChatFrame1:AddMessage("|cff33ff99Butsu:|r "..a) end
@@ -141,6 +141,11 @@ end
 title:SetFontObject(GameTooltipHeaderText)
 title:SetPoint("BOTTOMLEFT", addon, "TOPLEFT", 5, 0)
 
+addon:SetScript("OnMouseDown", function(self) if(IsAltKeyDown()) then self:StartMoving() end end)
+addon:SetScript("OnMouseUp", function(self) self:StopMovingOrSizing() end)
+addon:SetMovable(true)
+addon:RegisterForClicks"anyup"
+
 addon:SetParent(UIParent)
 addon:SetPoint("TOP", -200, -50)
 addon:SetBackdrop{
@@ -151,6 +156,9 @@ addon:SetBackdrop{
 addon:SetWidth(256)
 addon:SetHeight(64)
 addon:SetBackdropColor(0, 0, 0, 1)
+addon:SetClampedToScreen(true)
+addon:SetClampRectInsets(0, 0, 14, 0)
+addon:SetHitRectInsets(0, 0, -14, 0)
 
 addon.slots = {}
 addon.LOOT_OPENED = function(self, event, autoloot)
@@ -233,7 +241,7 @@ end
 addon.LOOT_CLOSED = function(self)
 	self:Hide()
 	CloseLoot()
-	StaticPopup_Hide("LOOT_BIND")
+	StaticPopup_Hide"LOOT_BIND"
 	StaticPopup_Hide"CONFIRM_LOOT_DISTRIBUTION"
 
 	for k, v in pairs(self.slots) do
@@ -270,9 +278,14 @@ function GroupLootDropDown_GiveLoot()
 		if( dialog ) then
 			dialog.data = this.value;
 		end
+		hax = dialog
 	else
 		GiveMasterLoot(ss, this.value)
 	end
 	
 	CloseDropDownMenus()
+end
+
+StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].OnAccept = function(data)
+	GiveMasterLoot(ss, data)
 end
