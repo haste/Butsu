@@ -278,7 +278,6 @@ function GroupLootDropDown_GiveLoot()
 		if( dialog ) then
 			dialog.data = this.value;
 		end
-		hax = dialog
 	else
 		GiveMasterLoot(ss, this.value)
 	end
