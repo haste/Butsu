@@ -64,7 +64,7 @@ local OnClick = function(self)
 	if(IsModifiedClick()) then
 		HandleModifiedItemClick(GetLootSlotLink(self:GetID()))
 	else
-		StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION")
+		StaticPopup_Hide"CONFIRM_LOOT_DISTRIBUTION"
 		ss = self:GetID()
 		sq = self.quality
 		sn = self.name:GetText()
@@ -147,7 +147,8 @@ addon:SetMovable(true)
 addon:RegisterForClicks"anyup"
 
 addon:SetParent(UIParent)
-addon:SetPoint("TOP", -200, -50)
+addon:SetUserPlaced(true)
+addon:SetPoint("TOPLEFT", 0, -104)
 addon:SetBackdrop{
 	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", tile = true, tileSize = 16,
 	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 16,
@@ -156,35 +157,45 @@ addon:SetBackdrop{
 addon:SetWidth(256)
 addon:SetHeight(64)
 addon:SetBackdropColor(0, 0, 0, 1)
+
 addon:SetClampedToScreen(true)
 addon:SetClampRectInsets(0, 0, 14, 0)
 addon:SetHitRectInsets(0, 0, -14, 0)
 
+
 addon.slots = {}
 addon.LOOT_OPENED = function(self, event, autoloot)
 	local items = GetNumLootItems()
-	local x, y = GetCursorPosition()
-	x = x / self:GetEffectiveScale()
-	y = y / self:GetEffectiveScale()
-	local posX = x - 175
-	local posY = y + 25
 
-	if (items > 0) then
-		posX = x - 40
-		posY = y + 55
-		posY = posY + 40
+	if(IsFishingLoot()) then
+		title:SetText"Fishy loot"
+	else
+		title:SetText(UnitName"target")
 	end
 
-	if( posY < 350 ) then
-		posY = 350
+	-- Blizzard uses strings here
+	if(LOOT_UNDER_MOUSE == "1") then
+		local x, y = GetCursorPosition()
+		x = x / self:GetEffectiveScale()
+		y = y / self:GetEffectiveScale()
+		local posX = x - 175
+		local posY = y + 25
+
+		if (items > 0) then
+			posX = x - 40
+			posY = y + 55
+			posY = posY + 40
+		end
+
+		if( posY < 350 ) then
+			posY = 350
+		end
+
+		self:ClearAllPoints()
+		self:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", posX, posY)
+		self:GetCenter()
+		self:Raise()
 	end
-
-	self:ClearAllPoints()
-	self:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", posX, posY)
-	self:GetCenter()
-	self:Raise()
-
-	title:SetText(UnitName"target")
 
 	local m, w, t = 0, 0, title:GetStringWidth()
 	for i=1, items do
@@ -239,10 +250,11 @@ addon.LOOT_SLOT_CLEARED = function(self, event, slot)
 end
 
 addon.LOOT_CLOSED = function(self)
-	self:Hide()
-	CloseLoot()
 	StaticPopup_Hide"LOOT_BIND"
 	StaticPopup_Hide"CONFIRM_LOOT_DISTRIBUTION"
+
+	self:Hide()
+	CloseLoot()
 
 	for k, v in pairs(self.slots) do
 		v:Hide()
@@ -281,7 +293,7 @@ function GroupLootDropDown_GiveLoot()
 	else
 		GiveMasterLoot(ss, this.value)
 	end
-	
+
 	CloseDropDownMenus()
 end
 
