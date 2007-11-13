@@ -162,15 +162,16 @@ addon:SetClampedToScreen(true)
 addon:SetClampRectInsets(0, 0, 14, 0)
 addon:SetHitRectInsets(0, 0, -14, 0)
 
-
 addon.slots = {}
 addon.LOOT_OPENED = function(self, event, autoloot)
 	local items = GetNumLootItems()
 
 	if(IsFishingLoot()) then
 		title:SetText"Fishy loot"
-	else
+	elseif(UnitIsEnemy("player", "target") and UnitIsDead"target") then
 		title:SetText(UnitName"target")
+	else
+		title:SetText"Loot"
 	end
 
 	-- Blizzard uses strings here
