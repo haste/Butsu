@@ -168,7 +168,7 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 
 	if(IsFishingLoot()) then
 		title:SetText"Fishy loot"
-	elseif(UnitIsEnemy("player", "target") and UnitIsDead"target") then
+	elseif(not UnitIsFriend("player", "target") and UnitIsDead"target") then
 		title:SetText(UnitName"target")
 	else
 		title:SetText"Loot"
