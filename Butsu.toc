@@ -1,17 +1,9 @@
 ﻿## Interface: 20300
 ## Title: Butsu
 ## Author: Haste
-## Version: 1.0
+## Version: 1.1
 ## X-eMail: troeks@gmail.com
 ## Notes: Loot frame replacement
 ## SavedVariables: ButsuDB
-
-locale\enUS.lua
-locale\deDE.lua
-locale\esES.lua
-locale\frFR.lua
-locale\koKR.lua
-locale\zhCN.lua
-locale\zhTW.lua
 
 loot.lua

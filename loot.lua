@@ -29,6 +29,10 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ---------------------------------------------------------------------------]]
 
+local L = {
+	fish = "Fishy loot",
+}
+
 local addon = CreateFrame("Button", "Butsu")
 local title = addon:CreateFontString(nil, "OVERLAY")
 
@@ -119,7 +123,7 @@ local createSlot = function(id)
 	name:SetPoint("LEFT", frame)
 	name:SetPoint("RIGHT", icon, "LEFT")
 	name:SetNonSpaceWrap(true)
-	name:SetFont(STANDARD_TEXT_FONT, 10)
+	name:SetFontObject(GameFontWhite)
 	name:SetShadowOffset(.8, -.8)
 	name:SetShadowColor(0, 0, 0, 1)
 	frame.name = name
@@ -167,11 +171,11 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 	local items = GetNumLootItems()
 
 	if(IsFishingLoot()) then
-		title:SetText"Fishy loot"
+		title:SetText(L.fish)
 	elseif(not UnitIsFriend("player", "target") and UnitIsDead"target") then
 		title:SetText(UnitName"target")
 	else
-		title:SetText"Loot"
+		title:SetText(LOOT)
 	end
 
 	-- Blizzard uses strings here
@@ -179,21 +183,9 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 		local x, y = GetCursorPosition()
 		x = x / self:GetEffectiveScale()
 		y = y / self:GetEffectiveScale()
-		local posX = x - 175
-		local posY = y + 25
-
-		if (items > 0) then
-			posX = x - 40
-			posY = y + 55
-			posY = posY + 40
-		end
-
-		if( posY < 350 ) then
-			posY = 350
-		end
 
 		self:ClearAllPoints()
-		self:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", posX, posY)
+		self:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", x-40, y+20)
 		self:GetCenter()
 		self:Raise()
 	end
@@ -257,7 +249,7 @@ addon.LOOT_CLOSED = function(self)
 	self:Hide()
 	CloseLoot()
 
-	for k, v in pairs(self.slots) do
+	for _, v in pairs(self.slots) do
 		v:Hide()
 	end
 end
