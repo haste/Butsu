@@ -31,6 +31,7 @@
 
 local L = {
 	fish = "Fishy loot",
+	empty = "Empty slot",
 }
 
 local addon = CreateFrame("Button", "Butsu")
@@ -191,37 +192,55 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 	end
 
 	local m, w, t = 0, 0, title:GetStringWidth()
-	for i=1, items do
-		local slot = addon.slots[i] or createSlot(i)
-		local texture, item, quantity, quality, locked = GetLootSlotInfo(i)
-		local color = ITEM_QUALITY_COLORS[quality]
+	if(items > 0) then
+		for i=1, items do
+			local slot = addon.slots[i] or createSlot(i)
+			local texture, item, quantity, quality, locked = GetLootSlotInfo(i)
+			local color = ITEM_QUALITY_COLORS[quality]
 
-		if(LootSlotIsCoin(i)) then
-			item = item:gsub("\n", ", ")
+			if(LootSlotIsCoin(i)) then
+				item = item:gsub("\n", ", ")
+			end
+
+			if(quantity > 1) then
+				slot.count:SetText(quantity)
+				slot.count:Show()
+			else
+				slot.count:Hide()
+			end
+
+			if(quality > 1) then
+				slot.drop:SetVertexColor(color.r, color.g, color.b)
+				slot.drop:Show()
+			else
+				slot.drop:Hide()
+			end
+
+			slot.quality = quality
+			slot.name:SetText(item)
+			slot.name:SetTextColor(color.r, color.g, color.b)
+			slot.icon:SetTexture(texture)
+
+			m = math.max(m, quality)
+			w = math.max(w, slot.name:GetStringWidth())
+
+			slot:Enable()
+			slot:Show()
 		end
+	else
+		local slot = addon.slots[1] or createSlot(1)
+		local color = ITEM_QUALITY_COLORS[0]
 
-		if(quantity > 1) then
-			slot.count:SetText(quantity)
-			slot.count:Show()
-		else
-			slot.count:Hide()
-		end
-
-		if(quality > 1) then
-			slot.drop:SetVertexColor(color.r, color.g, color.b)
-			slot.drop:Show()
-		else
-			slot.drop:Hide()
-		end
-
-		slot.quality = quality
-
-		slot.name:SetText(item)
+		slot.name:SetText(L.empty)
 		slot.name:SetTextColor(color.r, color.g, color.b)
-		slot.icon:SetTexture(texture)
+		slot.icon:SetTexture[[Interface\Icons\INV_Misc_Herb_AncientLichen]]
 
-		m = math.max(m, quality)
+		items = 1
 		w = math.max(w, slot.name:GetStringWidth())
+
+		slot.count:Hide()
+		slot.drop:Hide()
+		slot:Disable()
 		slot:Show()
 	end
 
@@ -277,7 +296,7 @@ addon:Hide()
 LootFrame:UnregisterAllEvents()
 UIPanelWindows["Butsu"] = { area = "left", pushable = 7 }
 
-function GroupLootDropDown_GiveLoot()
+function _G.GroupLootDropDown_GiveLoot()
 	if(sq >= MASTER_LOOT_THREHOLD) then
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[sq].hex..sn..FONT_COLOR_CODE_CLOSE, this:GetText() )
 		if( dialog ) then
