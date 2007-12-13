@@ -166,6 +166,8 @@ addon:SetBackdropColor(0, 0, 0, 1)
 addon:SetClampedToScreen(true)
 addon:SetClampRectInsets(0, 0, 14, 0)
 addon:SetHitRectInsets(0, 0, -14, 0)
+addon:SetFrameStrata"HIGH"
+addon:SetToplevel(true)
 
 addon.slots = {}
 addon.LOOT_OPENED = function(self, event, autoloot)
