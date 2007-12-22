@@ -148,6 +148,10 @@ title:SetPoint("BOTTOMLEFT", addon, "TOPLEFT", 5, 0)
 
 addon:SetScript("OnMouseDown", function(self) if(IsAltKeyDown()) then self:StartMoving() end end)
 addon:SetScript("OnMouseUp", function(self) self:StopMovingOrSizing() end)
+addon:SetScript("OnHide", function(self)
+	StaticPopup_Hide"CONFIRM_LOOT_DISTRIBUTION"
+	CloseLoot()
+end)
 addon:SetMovable(true)
 addon:RegisterForClicks"anyup"
 
@@ -171,6 +175,12 @@ addon:SetToplevel(true)
 
 addon.slots = {}
 addon.LOOT_OPENED = function(self, event, autoloot)
+	self:Show()
+
+	if(not self:IsShown()) then
+		CloseLoot(not autoLoot)
+	end
+
 	local items = GetNumLootItems()
 
 	if(IsFishingLoot()) then
@@ -253,8 +263,6 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 	self:SetBackdropBorderColor(color.r, color.g, color.b, .8)
 	self:SetHeight(math.max((items*iconsize)+16), 20)
 	self:SetWidth(math.max(w, t))
-
-	self:Show()
 end
 
 addon.LOOT_SLOT_CLEARED = function(self, event, slot)
@@ -265,10 +273,7 @@ end
 
 addon.LOOT_CLOSED = function(self)
 	StaticPopup_Hide"LOOT_BIND"
-	StaticPopup_Hide"CONFIRM_LOOT_DISTRIBUTION"
-
 	self:Hide()
-	CloseLoot()
 
 	for _, v in pairs(self.slots) do
 		v:Hide()
@@ -296,7 +301,7 @@ addon:Hide()
 
 -- Fuzz
 LootFrame:UnregisterAllEvents()
-UIPanelWindows["Butsu"] = { area = "left", pushable = 7 }
+table.insert(UISpecialFrames, "Butsu")
 
 function _G.GroupLootDropDown_GiveLoot()
 	if(sq >= MASTER_LOOT_THREHOLD) then
