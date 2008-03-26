@@ -192,7 +192,7 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 	end
 
 	-- Blizzard uses strings here
-	if(LOOT_UNDER_MOUSE == "1") then
+	if(GetCVar("lootUnderMouse") == "1") then
 		local x, y = GetCursorPosition()
 		x = x / self:GetEffectiveScale()
 		y = y / self:GetEffectiveScale()
