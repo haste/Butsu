@@ -105,6 +105,7 @@ local createSlot = function(id)
 
 	local icon = iconFrame:CreateTexture(nil, "ARTWORK")
 	icon:SetAlpha(.8)
+	icon:SetTexCoord(.07, .93, .07, .93)
 	icon:SetAllPoints(iconFrame)
 	frame.icon = icon
 
