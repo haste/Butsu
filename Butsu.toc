@@ -1,7 +1,7 @@
 ﻿## Interface: 20400
 ## Title: Butsu
 ## Author: Haste
-## Version: 1.5
+## Version: 1.6
 ## X-eMail: troeks@gmail.com
 ## Notes: Loot frame replacement
 ## SavedVariables: ButsuDB
