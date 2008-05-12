@@ -286,7 +286,7 @@ addon.OPEN_MASTER_LOOT_LIST = function(self)
 end
 
 addon.UPDATE_MASTER_LOOT_LIST = function(self)
-	IDropDownMenu_Refresh(GroupLootDropDown)
+	UIDropDownMenu_Refresh(GroupLootDropDown)
 end
 
 addon:SetScript("OnEvent", function(self, event, ...)
