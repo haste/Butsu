@@ -81,12 +81,12 @@ local OnUpdate = function(self)
 	if(GameTooltip:IsOwned(self)) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetLootItem(self:GetID())
-		CursorOnUpdate()
+		CursorOnUpdate(self)
 	end
 end
 
 local createSlot = function(id)
-	local frame = CreateFrame("Button", nil, addon)
+	local frame = CreateFrame("Button", 'ButsuSlot'..id, addon)
 	frame:SetPoint("LEFT", 8, 0)
 	frame:SetPoint("RIGHT", -8, 0)
 	frame:SetHeight(iconsize)
