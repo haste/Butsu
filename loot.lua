@@ -304,16 +304,15 @@ addon:Hide()
 LootFrame:UnregisterAllEvents()
 table.insert(UISpecialFrames, "Butsu")
 
-function _G.GroupLootDropDown_GiveLoot()
-	if(sq >= MASTER_LOOT_THREHOLD) then
-		local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[sq].hex..sn..FONT_COLOR_CODE_CLOSE, this:GetText() )
-		if( dialog ) then
-			dialog.data = this.value;
+function _G.GroupLootDropDown_GiveLoot(self)
+	if ( sq >= MASTER_LOOT_THREHOLD ) then
+		local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[sq].hex..sn..FONT_COLOR_CODE_CLOSE, self:GetText())
+		if ( dialog ) then
+			dialog.data = self.value
 		end
 	else
-		GiveMasterLoot(ss, this.value)
+		GiveMasterLoot(ss, self.value)
 	end
-
 	CloseDropDownMenus()
 end
 
