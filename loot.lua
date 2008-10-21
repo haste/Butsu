@@ -46,7 +46,7 @@ local OnEnter = function(self)
 	if(LootSlotIsItem(slot)) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetLootItem(slot)
-		CursorUpdate()
+		CursorUpdate(self)
 	end
 
 	self.drop:Show()
