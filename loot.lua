@@ -307,7 +307,7 @@ table.insert(UISpecialFrames, "Butsu")
 function _G.GroupLootDropDown_GiveLoot(self)
 	if ( sq >= MASTER_LOOT_THREHOLD ) then
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[sq].hex..sn..FONT_COLOR_CODE_CLOSE, self:GetText())
-		if ( dialog ) then
+		if (dialog) then
 			dialog.data = self.value
 		end
 	else
@@ -316,6 +316,6 @@ function _G.GroupLootDropDown_GiveLoot(self)
 	CloseDropDownMenus()
 end
 
-StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].OnAccept = function(data)
+StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].OnAccept = function(self, data)
 	GiveMasterLoot(ss, data)
 end
