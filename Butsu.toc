@@ -1,4 +1,4 @@
-﻿## Interface: 30000
+﻿## Interface: 30200
 ## Title: Butsu
 ## Author: Haste
 ## Version: 1.10
