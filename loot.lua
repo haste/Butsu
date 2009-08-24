@@ -6,7 +6,12 @@ local L = {
 local addon = CreateFrame("Button", "Butsu")
 local title = addon:CreateFontString(nil, "OVERLAY")
 
-local iconsize = 22
+local db
+local defaults = {
+	iconSize = 22;
+	frameScale = 1;
+}
+
 local sq, ss, sn
 
 local OnEnter = function(self)
@@ -54,6 +59,7 @@ local OnUpdate = function(self)
 end
 
 local createSlot = function(id)
+	local iconsize = db.iconSize
 	local frame = CreateFrame("Button", 'ButsuSlot'..id, addon)
 	frame:SetPoint("LEFT", 8, 0)
 	frame:SetPoint("RIGHT", -8, 0)
@@ -259,6 +265,16 @@ addon.UPDATE_MASTER_LOOT_LIST = function(self)
 	UIDropDownMenu_Refresh(GroupLootDropDown)
 end
 
+addon.ADDON_LOADED = function(self, event, addon)
+	if(addon == "Butsu") then
+		db = setmetatable({}, {__index = defaults})
+
+		-- clean up.
+		self[event] = nil
+		self:UnregisterEvent(event)
+	end
+end
+
 addon:SetScript("OnEvent", function(self, event, ...)
 	self[event](self, event, ...)
 end)
@@ -268,6 +284,7 @@ addon:RegisterEvent"LOOT_SLOT_CLEARED"
 addon:RegisterEvent"LOOT_CLOSED"
 addon:RegisterEvent"OPEN_MASTER_LOOT_LIST"
 addon:RegisterEvent"UPDATE_MASTER_LOOT_LIST"
+addon:RegisterEvent"ADDON_LOADED"
 addon:Hide()
 
 -- Fuzz
