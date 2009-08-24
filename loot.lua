@@ -6,7 +6,6 @@ local L = {
 local addon = CreateFrame("Button", "Butsu")
 local title = addon:CreateFontString(nil, "OVERLAY")
 
-local print = function(a) ChatFrame1:AddMessage("|cff33ff99Butsu:|r "..a) end
 local iconsize = 22
 local sq, ss, sn
 
@@ -60,6 +59,8 @@ local createSlot = function(id)
 	frame:SetPoint("RIGHT", -8, 0)
 	frame:SetHeight(iconsize)
 	frame:SetID(id)
+
+	frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 
 	frame:SetScript("OnEnter", OnEnter)
 	frame:SetScript("OnLeave", OnLeave)
