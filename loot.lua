@@ -236,6 +236,7 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 	w = w + 60
 	t = t + 5
 
+	local iconsize = db.iconSize
 	local color = ITEM_QUALITY_COLORS[m]
 	self:SetBackdropBorderColor(color.r, color.g, color.b, .8)
 	self:SetHeight(math.max((items*iconsize)+16), 20)
@@ -268,6 +269,8 @@ end
 addon.ADDON_LOADED = function(self, event, addon)
 	if(addon == "Butsu") then
 		db = setmetatable({}, {__index = defaults})
+
+		self:SetScale(db.frameScale)
 
 		-- clean up.
 		self[event] = nil
