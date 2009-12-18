@@ -115,9 +115,24 @@ local createSlot = function(id)
 	drop:SetAlpha(.3)
 	frame.drop = drop
 
-	frame:SetPoint("TOP", addon, 4, (-8+iconsize)-(id*iconsize))
 	addon.slots[id] = frame
 	return frame
+end
+
+local anchorSlots = function(self)
+	local iconsize = db.iconSize
+	local shownSlots = 0
+	for i=1, #self.slots do
+		local frame = self.slots[i]
+		if(frame:IsShown()) then
+			shownSlots = shownSlots + 1
+
+			-- We don't have to worry about the previous slots as they're already hidden.
+			frame:SetPoint("TOP", addon, 4, (-8+iconsize)-(shownSlots*iconsize))
+		end
+	end
+
+	self:SetHeight(math.max((shownSlots*iconsize)+16), 20)
 end
 
 title:SetFontObject(GameTooltipHeaderText)
@@ -232,14 +247,13 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 		slot:Disable()
 		slot:Show()
 	end
+	anchorSlots(self)
 
 	w = w + 60
 	t = t + 5
 
-	local iconsize = db.iconSize
 	local color = ITEM_QUALITY_COLORS[m]
 	self:SetBackdropBorderColor(color.r, color.g, color.b, .8)
-	self:SetHeight(math.max((items*iconsize)+16), 20)
 	self:SetWidth(math.max(w, t))
 end
 
@@ -247,6 +261,7 @@ addon.LOOT_SLOT_CLEARED = function(self, event, slot)
 	if(not self:IsShown()) then return end
 
 	addon.slots[slot]:Hide()
+	anchorSlots(self)
 end
 
 addon.LOOT_CLOSED = function(self)
