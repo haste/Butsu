@@ -1,9 +1,15 @@
-﻿## Interface: 30200
+## Interface: 30300
 ## Title: Butsu
 ## Author: Haste
-## Version: 1.10
+## Version: 2.0
 ## X-eMail: troeks@gmail.com
 ## Notes: Loot frame replacement
 ## SavedVariables: ButsuDB
 
-loot.lua
+locale/enUS.lua
+
+butsu.lua
+layout.lua
+slots.lua
+hooks.lua
+config.lua

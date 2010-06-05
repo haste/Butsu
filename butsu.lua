@@ -1,186 +1,37 @@
-local L = {
-	fish = "Fishy loot",
-	empty = "Empty slot",
-}
-
-local addon = CreateFrame("Button", "Butsu")
-local title = addon:CreateFontString(nil, "OVERLAY")
-
-local db
-local defaults = {
-	iconSize = 22;
-	frameScale = 1;
-}
-
-local sq, ss, sn
-
-local OnEnter = function(self)
-	local slot = self:GetID()
-	if(LootSlotIsItem(slot)) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetLootItem(slot)
-		CursorUpdate(self)
-	end
-
-	self.drop:Show()
-	self.drop:SetVertexColor(1, 1, 0)
-end
-
-local OnLeave = function(self)
-	if(self.quality > 1) then
-		local color = ITEM_QUALITY_COLORS[self.quality]
-		self.drop:SetVertexColor(color.r, color.g, color.b)
-	else
-		self.drop:Hide()
-	end
-
-	GameTooltip:Hide()
-	ResetCursor()
-end
-
-local OnClick = function(self)
-	if(IsModifiedClick()) then
-		HandleModifiedItemClick(GetLootSlotLink(self:GetID()))
-	else
-		StaticPopup_Hide"CONFIRM_LOOT_DISTRIBUTION"
-		ss = self:GetID()
-		sq = self.quality
-		sn = self.name:GetText()
-		LootSlot(ss)
-	end
-end
-
-local OnUpdate = function(self)
-	if(GameTooltip:IsOwned(self)) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetLootItem(self:GetID())
-		CursorOnUpdate(self)
-	end
-end
-
-local createSlot = function(id)
-	local iconsize = db.iconSize
-	local frame = CreateFrame("Button", 'ButsuSlot'..id, addon)
-	frame:SetPoint("LEFT", 8, 0)
-	frame:SetPoint("RIGHT", -8, 0)
-	frame:SetHeight(iconsize)
-	frame:SetID(id)
-
-	frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-
-	frame:SetScript("OnEnter", OnEnter)
-	frame:SetScript("OnLeave", OnLeave)
-	frame:SetScript("OnClick", OnClick)
-	frame:SetScript("OnUpdate", OnUpdate)
-
-	local iconFrame = CreateFrame("Frame", nil, frame)
-	iconFrame:SetHeight(iconsize)
-	iconFrame:SetWidth(iconsize)
-	iconFrame:ClearAllPoints()
-	iconFrame:SetPoint("RIGHT", frame)
-
-	local icon = iconFrame:CreateTexture(nil, "ARTWORK")
-	icon:SetAlpha(.8)
-	icon:SetTexCoord(.07, .93, .07, .93)
-	icon:SetAllPoints(iconFrame)
-	frame.icon = icon
-
-	local count = iconFrame:CreateFontString(nil, "OVERLAY")
-	count:ClearAllPoints()
-	count:SetJustifyH"RIGHT"
-	count:SetPoint("BOTTOMRIGHT", iconFrame, 2, 2)
-	count:SetFontObject(NumberFontNormalSmall)
-	count:SetShadowOffset(.8, -.8)
-	count:SetShadowColor(0, 0, 0, 1)
-	count:SetText(1)
-	frame.count = count
-
-	local name = frame:CreateFontString(nil, "OVERLAY")
-	name:SetJustifyH"LEFT"
-	name:ClearAllPoints()
-	name:SetPoint("LEFT", frame)
-	name:SetPoint("RIGHT", icon, "LEFT")
-	name:SetNonSpaceWrap(true)
-	name:SetFontObject(GameFontWhite)
-	name:SetShadowOffset(.8, -.8)
-	name:SetShadowColor(0, 0, 0, 1)
-	frame.name = name
-
-	local drop = frame:CreateTexture(nil, "ARTWORK")
-	drop:SetTexture"Interface\\QuestFrame\\UI-QuestLogTitleHighlight"
-
-	drop:SetPoint("LEFT", icon, "RIGHT", 0, 0)
-	drop:SetPoint("RIGHT", frame)
-	drop:SetAllPoints(frame)
-	drop:SetAlpha(.3)
-	frame.drop = drop
-
-	addon.slots[id] = frame
-	return frame
-end
+local _NAME, _NS = ...
+local Butsu = CreateFrame("Button", _NAME)
+Butsu:Hide()
 
 local anchorSlots = function(self)
-	local iconsize = db.iconSize
+	local iconSize = _NS.db.iconSize
 	local shownSlots = 0
-	for i=1, #self.slots do
-		local frame = self.slots[i]
+	for i=1, #_NS.slots do
+		local frame = _NS.slots[i]
 		if(frame:IsShown()) then
 			shownSlots = shownSlots + 1
 
 			-- We don't have to worry about the previous slots as they're already hidden.
-			frame:SetPoint("TOP", addon, 4, (-8+iconsize)-(shownSlots*iconsize))
+			frame:SetPoint("TOP", Butsu, 4, (-8+iconSize)-(shownSlots*iconSize))
 		end
 	end
 
-	self:SetHeight(math.max((shownSlots*iconsize)+16), 20)
+	self:SetHeight(math.max((shownSlots*iconSize)+16), 20)
 end
 
-title:SetFontObject(GameTooltipHeaderText)
-title:SetPoint("BOTTOMLEFT", addon, "TOPLEFT", 5, 0)
-
-addon:SetScript("OnMouseDown", function(self) if(IsAltKeyDown()) then self:StartMoving() end end)
-addon:SetScript("OnMouseUp", function(self) self:StopMovingOrSizing() end)
-addon:SetScript("OnHide", function(self)
-	StaticPopup_Hide"CONFIRM_LOOT_DISTRIBUTION"
-	CloseLoot()
-end)
-addon:SetMovable(true)
-addon:RegisterForClicks"anyup"
-
-addon:SetParent(UIParent)
-addon:SetUserPlaced(true)
-addon:SetPoint("TOPLEFT", 0, -104)
-addon:SetBackdrop{
-	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", tile = true, tileSize = 16,
-	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 16,
-	insets = {left = 4, right = 4, top = 4, bottom = 4},
-}
-addon:SetWidth(256)
-addon:SetHeight(64)
-addon:SetBackdropColor(0, 0, 0, 1)
-
-addon:SetClampedToScreen(true)
-addon:SetClampRectInsets(0, 0, 14, 0)
-addon:SetHitRectInsets(0, 0, -14, 0)
-addon:SetFrameStrata"HIGH"
-addon:SetToplevel(true)
-
-addon.slots = {}
-addon.LOOT_OPENED = function(self, event, autoloot)
+function Butsu:LOOT_OPENED(event, autoloot)
 	self:Show()
 
 	if(not self:IsShown()) then
 		CloseLoot(not autoLoot)
 	end
 
-	local items = GetNumLootItems()
-
+	local L = _NS.L
 	if(IsFishingLoot()) then
-		title:SetText(L.fish)
+		self.title:SetText(L.fish)
 	elseif(not UnitIsFriend("player", "target") and UnitIsDead"target") then
-		title:SetText(UnitName"target")
+		self.title:SetText(UnitName"target")
 	else
-		title:SetText(LOOT)
+		self.title:SetText(LOOT)
 	end
 
 	-- Blizzard uses strings here
@@ -195,10 +46,11 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 		self:Raise()
 	end
 
-	local m, w, t = 0, 0, title:GetStringWidth()
+	local m, w, t = 0, 0, self.title:GetStringWidth()
+	local items = GetNumLootItems()
 	if(items > 0) then
 		for i=1, items do
-			local slot = addon.slots[i] or createSlot(i)
+			local slot = _NS.slots[i] or _NS.CreateSlot(i)
 			local texture, item, quantity, quality, locked = GetLootSlotInfo(i)
 			local color = ITEM_QUALITY_COLORS[quality]
 
@@ -232,7 +84,7 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 			slot:Show()
 		end
 	else
-		local slot = addon.slots[1] or createSlot(1)
+		local slot = _NS.slots[1] or createSlot(1)
 		local color = ITEM_QUALITY_COLORS[0]
 
 		slot.name:SetText(L.empty)
@@ -256,71 +108,36 @@ addon.LOOT_OPENED = function(self, event, autoloot)
 	self:SetBackdropBorderColor(color.r, color.g, color.b, .8)
 	self:SetWidth(math.max(w, t))
 end
+Butsu:RegisterEvent"LOOT_OPENED"
 
-addon.LOOT_SLOT_CLEARED = function(self, event, slot)
+function Butsu:LOOT_SLOT_CLEARED(event, slot)
 	if(not self:IsShown()) then return end
 
-	addon.slots[slot]:Hide()
+	_NS.slots[slot]:Hide()
 	anchorSlots(self)
 end
+Butsu:RegisterEvent"LOOT_SLOT_CLEARED"
 
-addon.LOOT_CLOSED = function(self)
+function Butsu:LOOT_CLOSED()
 	StaticPopup_Hide"LOOT_BIND"
 	self:Hide()
 
-	for _, v in pairs(self.slots) do
+	for _, v in pairs(_NS.slots) do
 		v:Hide()
 	end
 end
+Butsu:RegisterEvent"LOOT_CLOSED"
 
-addon.OPEN_MASTER_LOOT_LIST = function(self)
-	ToggleDropDownMenu(1, nil, GroupLootDropDown, addon.slots[ss], 0, 0)
+function Butsu:OPEN_MASTER_LOOT_LIST()
+	ToggleDropDownMenu(1, nil, GroupLootDropDown, LootFrame.selectedSlot, 0, 0)
 end
+Butsu:RegisterEvent"OPEN_MASTER_LOOT_LIST"
 
-addon.UPDATE_MASTER_LOOT_LIST = function(self)
+function Butsu:UPDATE_MASTER_LOOT_LIST()
 	UIDropDownMenu_Refresh(GroupLootDropDown)
 end
+Butsu:RegisterEvent"UPDATE_MASTER_LOOT_LIST"
 
-addon.ADDON_LOADED = function(self, event, addon)
-	if(addon == "Butsu") then
-		db = setmetatable({}, {__index = defaults})
-
-		self:SetScale(db.frameScale)
-
-		-- clean up.
-		self[event] = nil
-		self:UnregisterEvent(event)
-	end
-end
-
-addon:SetScript("OnEvent", function(self, event, ...)
+Butsu:SetScript("OnEvent", function(self, event, ...)
 	self[event](self, event, ...)
 end)
-
-addon:RegisterEvent"LOOT_OPENED"
-addon:RegisterEvent"LOOT_SLOT_CLEARED"
-addon:RegisterEvent"LOOT_CLOSED"
-addon:RegisterEvent"OPEN_MASTER_LOOT_LIST"
-addon:RegisterEvent"UPDATE_MASTER_LOOT_LIST"
-addon:RegisterEvent"ADDON_LOADED"
-addon:Hide()
-
--- Fuzz
-LootFrame:UnregisterAllEvents()
-table.insert(UISpecialFrames, "Butsu")
-
-function _G.GroupLootDropDown_GiveLoot(self)
-	if ( sq >= MASTER_LOOT_THREHOLD ) then
-		local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[sq].hex..sn..FONT_COLOR_CODE_CLOSE, self:GetText())
-		if (dialog) then
-			dialog.data = self.value
-		end
-	else
-		GiveMasterLoot(ss, self.value)
-	end
-	CloseDropDownMenus()
-end
-
-StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].OnAccept = function(self, data)
-	GiveMasterLoot(ss, data)
-end
