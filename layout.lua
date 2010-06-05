@@ -7,21 +7,16 @@ do
 	Butsu.title = title
 end
 
-do
-	local round = function(n)
-		return math.floor(n * 1e5 + .5) / 1e5
+Butsu:SetScript("OnMouseDown", function(self)
+	if(IsAltKeyDown()) then
+		self:StartMoving()
 	end
+end)
 
-	Butsu:SetScript("OnMouseDown", function(self)
-		if(IsAltKeyDown()) then
-			self:StartMoving()
-		end
-	end)
-
-	Butsu:SetScript("OnMouseUp", function(self)
-		self:StopMovingOrSizing()
-	end)
-end
+Butsu:SetScript("OnMouseUp", function(self)
+	self:StopMovingOrSizing()
+	self:SavePosition()
+end)
 
 Butsu:SetScript("OnHide", function(self)
 	StaticPopup_Hide"CONFIRM_LOOT_DISTRIBUTION"
@@ -32,8 +27,6 @@ Butsu:SetMovable(true)
 Butsu:RegisterForClicks"anyup"
 
 Butsu:SetParent(UIParent)
-Butsu:SetUserPlaced(true)
-Butsu:SetPoint("TOPLEFT", 0, -104)
 Butsu:SetBackdrop{
 	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", tile = true, tileSize = 16,
 	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 16,

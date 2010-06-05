@@ -7,7 +7,8 @@ do
 		-- We only need this once.
 		self:SetScript('OnShow', nil)
 
-		local db = setmetatable({},
+		local db = ButsuDB or {}
+		_NS.db = setmetatable(db,
 		{
 			__index = {
 				iconSize = 22;
@@ -18,12 +19,17 @@ do
 				fontSizeCount = select(2, NumberFontNormalSmall:GetFont());
 
 				frameScale = 1;
-				framePosition = '';
+				framePosition = 'TOPLEFT\031UIParent\0310\031-104';
 			}
 		})
-		_NS.db = db
+
+		if(not ButsDB) then
+			ButsuDB = db
+		end
 
 		self.title:SetFont(GameTooltipHeaderText:GetFont(), db.fontSizeTitle, 'OUTLINE')
 		self:SetScale(db.frameScale)
+
+		self:LoadPosition()
 	end)
 end

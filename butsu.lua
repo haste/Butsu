@@ -18,6 +18,10 @@ local anchorSlots = function(self)
 	self:SetHeight(math.max((shownSlots*iconSize)+16), 20)
 end
 
+Butsu:SetScript("OnEvent", function(self, event, ...)
+	self[event](self, event, ...)
+end)
+
 function Butsu:LOOT_OPENED(event, autoloot)
 	self:Show()
 
@@ -138,6 +142,27 @@ function Butsu:UPDATE_MASTER_LOOT_LIST()
 end
 Butsu:RegisterEvent"UPDATE_MASTER_LOOT_LIST"
 
-Butsu:SetScript("OnEvent", function(self, event, ...)
-	self[event](self, event, ...)
-end)
+do
+	local round = function(n)
+		return math.floor(n * 1e5 + .5) / 1e5
+	end
+
+	function Butsu:SavePosition()
+		local point, parent, _, x, y = self:GetPoint()
+		print(point, parentName, x, y)
+
+		_NS.db.framePosition = string.format(
+			'%s\031%s\031%d\031%d',
+			point, 'UIParent', round(x), round(y)
+		)
+	end
+
+	function Butsu:LoadPosition()
+		local scale = self:GetScale()
+		local point, parentName, x, y = string.split('\031', _NS.db.framePosition)
+
+		print(point, parentName, x, y)
+		self:ClearAllPoints()
+		self:SetPoint(point, parentName, point, x / scale, y / scale)
+	end
+end
