@@ -78,6 +78,7 @@ do
 		iconFrame:SetWidth(iconSize)
 		iconFrame:ClearAllPoints()
 		iconFrame:SetPoint("RIGHT", frame)
+		frame.iconFrame = iconFrame
 
 		local icon = iconFrame:CreateTexture(nil, "ARTWORK")
 		icon:SetAlpha(.8)
