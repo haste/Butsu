@@ -85,6 +85,8 @@ do
 		end
 
 		local title = createFontString(_NAME, 'GameFontNormalLarge', 'TOPLEFT', 16, -16)
+		title:SetPoint('TOPRIGHT', -16, -16)
+		title:SetJustifyH'LEFT'
 
 		local L = _NS.L
 		local fontSizeTitle = createSlider(L.uiTitleSize, 7, 40, db.fontSizeTitle, 'TOPLEFT', title, 'BOTTOMLEFT', 0, -16)
@@ -124,7 +126,7 @@ do
 			end
 		end)
 
-		local iconSize = createSlider(L.uiIconSize, 14, 80, db.iconSize, 'TOPLEFT', fontSizeCount, 'BOTTOMLEFT', 0, -32)
+		local iconSize = createSlider(L.uiIconSize, 14, 80, db.iconSize, 'TOPRIGHT', title, 'BOTTOMRIGHT', 0, -16)
 		iconSize:SetScript('OnValueChanged', function(self, value)
 			value = math.floor(value + .5)
 
