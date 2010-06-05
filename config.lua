@@ -111,6 +111,9 @@ do
 				local font, size, outline = slot.name:GetFont()
 				slot.name:SetFont(font, value, outline)
 			end
+
+			Butsu:UpdateWidth()
+			Butsu:AnchorSlots()
 		end)
 
 		local fontSizeCount = createSlider(L.uiCountSize, 7, 40, db.fontSizeCount, 'TOPLEFT', fontSizeItem, 'BOTTOMLEFT', 0, -32)
@@ -134,11 +137,15 @@ do
 			self.current:SetText(value)
 
 			for _, slot in next, _NS.slots do
+				slot:SetHeight(value)
 				slot.iconFrame:SetSize(value, value)
 			end
+
+			Butsu:UpdateWidth()
+			Butsu:AnchorSlots()
 		end)
 
-		local frameScale= createSlider(L.uiFrameScale, .4, 3, db.frameScale, 'TOPLEFT', iconSize, 'BOTTOMLEFT', 0, -32)
+		local frameScale = createSlider(L.uiFrameScale, .4, 3, db.frameScale, 'TOPLEFT', iconSize, 'BOTTOMLEFT', 0, -32)
 		frameScale:SetValueStep(.05)
 		frameScale:SetScript('OnValueChanged', function(self, value)
 			value = math.floor(value * 10^2 + .5) / 10^2

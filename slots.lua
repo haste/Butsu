@@ -1,4 +1,5 @@
 local _NAME, _NS = ...
+local Butsu = _G[_NAME]
 
 do
 	local slots = {}
@@ -60,10 +61,8 @@ do
 		local fontItem = GameFontWhite:GetFont()
 		local fontCount = NumberFontNormalSmall:GetFont()
 
-		local frame = CreateFrame("Button", 'ButsuSlot'..id, _G[_NAME])
-		frame:SetPoint("LEFT", 8, 0)
-		frame:SetPoint("RIGHT", -8, 0)
-		frame:SetHeight(iconSize)
+		local frame = CreateFrame("Button", 'ButsuSlot'..id, Butsu)
+		frame:SetHeight(math.max(fontSizeItem, iconSize))
 		frame:SetID(id)
 
 		frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -74,9 +73,7 @@ do
 		frame:SetScript("OnUpdate", OnUpdate)
 
 		local iconFrame = CreateFrame("Frame", nil, frame)
-		iconFrame:SetHeight(iconSize)
-		iconFrame:SetWidth(iconSize)
-		iconFrame:ClearAllPoints()
+		iconFrame:SetSize(iconSize, iconSize)
 		iconFrame:SetPoint("RIGHT", frame)
 		frame.iconFrame = iconFrame
 
@@ -87,7 +84,6 @@ do
 		frame.icon = icon
 
 		local count = iconFrame:CreateFontString(nil, "OVERLAY")
-		count:ClearAllPoints()
 		count:SetJustifyH"RIGHT"
 		count:SetPoint("BOTTOMRIGHT", iconFrame, 2, 2)
 		count:SetFont(fontCount, fontSizeCount, 'OUTLINE')
@@ -98,9 +94,8 @@ do
 
 		local name = frame:CreateFontString(nil, "OVERLAY")
 		name:SetJustifyH"LEFT"
-		name:ClearAllPoints()
 		name:SetPoint("LEFT", frame)
-		name:SetPoint("RIGHT", icon, "LEFT")
+		name:SetPoint("RIGHT", iconFrame, "LEFT")
 		name:SetNonSpaceWrap(true)
 		name:SetFont(fontItem, fontSizeItem)
 		name:SetShadowOffset(.8, -.8)
@@ -110,7 +105,7 @@ do
 		local drop = frame:CreateTexture(nil, "ARTWORK")
 		drop:SetTexture[[Interface\QuestFrame\UI-QuestLogTitleHighlight]]
 
-		drop:SetPoint("LEFT", icon, "RIGHT", 0, 0)
+		drop:SetPoint("LEFT", icon, "RIGHT")
 		drop:SetPoint("RIGHT", frame)
 		drop:SetAllPoints(frame)
 		drop:SetAlpha(.3)
@@ -118,5 +113,50 @@ do
 
 		slots[id] = frame
 		return frame
+	end
+
+	function Butsu:UpdateWidth()
+		local maxWidth = 0
+		for _, slot in next, _NS.slots do
+			local width = slot.name:GetStringWidth()
+			if(width > maxWidth) then
+				maxWidth = width
+			end
+		end
+
+		self:SetWidth(math.max(maxWidth + 30 + _NS.db.iconSize, self.title:GetStringWidth() + 5))
+	end
+
+	function Butsu:AnchorSlots()
+		local frameSize = math.max(_NS.db.iconSize, _NS.db.fontSizeItem)
+		local iconSize = _NS.db.iconSize
+		local shownSlots = 0
+
+		local prevShown
+		for i=1, #slots do
+			local frame = slots[i]
+			if(frame:IsShown()) then
+				frame:ClearAllPoints()
+				frame:SetPoint("LEFT", 8, 0)
+				frame:SetPoint("RIGHT", -8, 0)
+				if(not prevShown) then
+					frame:SetPoint('TOPLEFT', self, 8, -8)
+				else
+					frame:SetPoint('TOP', prevShown, 'BOTTOM')
+				end
+
+				frame:SetHeight(frameSize)
+				shownSlots = shownSlots + 1
+				prevShown = frame
+			end
+		end
+
+		local offset = self:GetTop() or 0
+		self:SetHeight(math.max((shownSlots * frameSize + 16), 20))
+
+		-- Reposition the frame so it doesn't move.
+		local point, parent, relPoint, x, y = self:GetPoint()
+		offset = offset - (self:GetTop() or 0)
+		self:SetPoint(point, parent, relPoint, x, y + offset)
 	end
 end

@@ -2,22 +2,6 @@ local _NAME, _NS = ...
 local Butsu = CreateFrame("Button", _NAME)
 Butsu:Hide()
 
-local anchorSlots = function(self)
-	local iconSize = _NS.db.iconSize
-	local shownSlots = 0
-	for i=1, #_NS.slots do
-		local frame = _NS.slots[i]
-		if(frame:IsShown()) then
-			shownSlots = shownSlots + 1
-
-			-- We don't have to worry about the previous slots as they're already hidden.
-			frame:SetPoint("TOP", Butsu, 4, (-8+iconSize)-(shownSlots*iconSize))
-		end
-	end
-
-	self:SetHeight(math.max((shownSlots*iconSize)+16), 20)
-end
-
 Butsu:SetScript("OnEvent", function(self, event, ...)
 	self[event](self, event, ...)
 end)
@@ -50,7 +34,7 @@ function Butsu:LOOT_OPENED(event, autoloot)
 		self:Raise()
 	end
 
-	local m, w, t = 0, 0, self.title:GetStringWidth()
+	local m = 0
 	local items = GetNumLootItems()
 	if(items > 0) then
 		for i=1, items do
@@ -82,7 +66,6 @@ function Butsu:LOOT_OPENED(event, autoloot)
 			slot.icon:SetTexture(texture)
 
 			m = math.max(m, quality)
-			w = math.max(w, slot.name:GetStringWidth())
 
 			slot:Enable()
 			slot:Show()
@@ -95,22 +78,17 @@ function Butsu:LOOT_OPENED(event, autoloot)
 		slot.name:SetTextColor(color.r, color.g, color.b)
 		slot.icon:SetTexture[[Interface\Icons\INV_Misc_Herb_AncientLichen]]
 
-		items = 1
-		w = math.max(w, slot.name:GetStringWidth())
-
 		slot.count:Hide()
 		slot.drop:Hide()
 		slot:Disable()
 		slot:Show()
 	end
-	anchorSlots(self)
-
-	w = w + 60
-	t = t + 5
+	self:AnchorSlots()
 
 	local color = ITEM_QUALITY_COLORS[m]
 	self:SetBackdropBorderColor(color.r, color.g, color.b, .8)
-	self:SetWidth(math.max(w, t))
+
+	self:UpdateWidth()
 end
 Butsu:RegisterEvent"LOOT_OPENED"
 
@@ -118,7 +96,7 @@ function Butsu:LOOT_SLOT_CLEARED(event, slot)
 	if(not self:IsShown()) then return end
 
 	_NS.slots[slot]:Hide()
-	anchorSlots(self)
+	self:AnchorSlots()
 end
 Butsu:RegisterEvent"LOOT_SLOT_CLEARED"
 
