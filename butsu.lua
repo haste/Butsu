@@ -88,7 +88,7 @@ function Butsu:LOOT_OPENED(event, autoloot)
 			slot:Show()
 		end
 	else
-		local slot = _NS.slots[1] or createSlot(1)
+		local slot = _NS.slots[1] or _NS.CreateSlot(1)
 		local color = ITEM_QUALITY_COLORS[0]
 
 		slot.name:SetText(L.empty)
