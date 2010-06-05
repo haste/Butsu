@@ -6,7 +6,7 @@
 ## Notes: Loot frame replacement
 ## SavedVariables: ButsuDB
 
-locale/enUS.lua
+locale.lua
 
 butsu.lua
 layout.lua
