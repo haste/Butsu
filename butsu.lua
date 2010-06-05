@@ -149,7 +149,6 @@ do
 
 	function Butsu:SavePosition()
 		local point, parent, _, x, y = self:GetPoint()
-		print(point, parentName, x, y)
 
 		_NS.db.framePosition = string.format(
 			'%s\031%s\031%d\031%d',
@@ -161,7 +160,6 @@ do
 		local scale = self:GetScale()
 		local point, parentName, x, y = string.split('\031', _NS.db.framePosition)
 
-		print(point, parentName, x, y)
 		self:ClearAllPoints()
 		self:SetPoint(point, parentName, point, x / scale, y / scale)
 	end
