@@ -23,7 +23,7 @@ do
 			}
 		})
 
-		if(not ButsDB) then
+		if(not ButsuDB) then
 			ButsuDB = db
 		end
 
