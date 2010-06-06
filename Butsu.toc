@@ -1,7 +1,7 @@
 ## Interface: 30300
 ## Title: Butsu
 ## Author: Haste
-## Version: 2.0
+## Version: 2.0.1
 ## X-eMail: troeks@gmail.com
 ## Notes: Loot frame replacement
 ## SavedVariables: ButsuDB
