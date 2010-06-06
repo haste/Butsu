@@ -111,7 +111,7 @@ end
 Butsu:RegisterEvent"LOOT_CLOSED"
 
 function Butsu:OPEN_MASTER_LOOT_LIST()
-	ToggleDropDownMenu(1, nil, GroupLootDropDown, LootFrame.selectedSlot, 0, 0)
+	ToggleDropDownMenu(1, nil, GroupLootDropDown, LootFrame.selectedLootButton, 0, 0)
 end
 Butsu:RegisterEvent"OPEN_MASTER_LOOT_LIST"
 
