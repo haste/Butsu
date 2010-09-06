@@ -84,12 +84,27 @@ do
 			end
 		end
 
-		local title = createFontString(_NAME, 'GameFontNormalLarge', 'TOPLEFT', 16, -16)
-		title:SetPoint('TOPRIGHT', -16, -16)
-		title:SetJustifyH'LEFT'
-
 		local L = _NS.L
-		local fontSizeTitle = createSlider(L.uiTitleSize, 7, 40, db.fontSizeTitle, 'TOPLEFT', title, 'BOTTOMLEFT', 0, -16)
+
+		local title = createFontString(_NAME, 'GameFontNormalLarge', 'TOPLEFT', 16, -16)
+		title:SetPoint('TOPRIGHT', -16, -16);
+		title:SetJustifyH('LEFT')
+
+		local version = createFontString(nil, 'GameFontHighlightSmall', 'TOPLEFT', 16, -16)
+		version:SetPoint('TOPRIGHT', -16, -16)
+		version:SetJustifyH('RIGHT')
+		version:SetFormattedText('%s', GetAddOnMetadata('Butsu', 'Version'))
+
+		local desc = createFontString(L.configDesc, 'GameFontHighlightSmall', 'TOPLEFT', title, 'BOTTOMLEFT', 0, -10)
+		desc:SetWidth(385)
+		desc:SetJustifyH('LEFT')
+
+		local note = createFontString(L.configNote, 'GameFontHighlightSmall', 'TOPLEFT', desc, 'BOTTOMLEFT', 0, -10)
+		note:SetWidth(385)
+		note:SetJustifyH('LEFT')
+		note:SetTextColor(0.8, 0.8, 0.8)
+
+		local fontSizeTitle = createSlider(L.uiTitleSize, 7, 40, db.fontSizeTitle, 'TOPLEFT', note, 'BOTTOMLEFT', 0, -28)
 		fontSizeTitle:SetScript('OnValueChanged', function(self, value)
 			value = math.floor(value + .5)
 
@@ -129,7 +144,7 @@ do
 			end
 		end)
 
-		local iconSize = createSlider(L.uiIconSize, 14, 80, db.iconSize, 'TOPRIGHT', title, 'BOTTOMRIGHT', 0, -16)
+		local iconSize = createSlider(L.uiIconSize, 14, 80, db.iconSize, 'TOPRIGHT', note, 'BOTTOMRIGHT', 0, -28)
 		iconSize:SetScript('OnValueChanged', function(self, value)
 			value = math.floor(value + .5)
 
