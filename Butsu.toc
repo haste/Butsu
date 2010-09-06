@@ -4,6 +4,7 @@
 ## Version: 2.0.1
 ## X-eMail: troeks@gmail.com
 ## Notes: Loot frame replacement
+## Notes-koKR: 전리품 프레임을 바꿔줍니다.
 ## SavedVariables: ButsuDB
 
 locale.lua
