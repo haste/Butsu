@@ -118,9 +118,11 @@ do
 	function Butsu:UpdateWidth()
 		local maxWidth = 0
 		for _, slot in next, _NS.slots do
-			local width = slot.name:GetStringWidth()
-			if(width > maxWidth) then
-				maxWidth = width
+			if(slot:IsShown()) then
+				local width = slot.name:GetStringWidth()
+				if(width > maxWidth) then
+					maxWidth = width
+				end
 			end
 		end
 
