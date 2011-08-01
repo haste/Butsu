@@ -47,8 +47,8 @@ do
 		LoadSettings(Butsu)
 
 		local db = _NS.db
-		local createFontString = function(text, template,  ...)
-			local label = self:CreateFontString(nil, nil, template or 'GameFontHighlight')
+		local createFontString = function(parent, text, template,  ...)
+			local label = parent:CreateFontString(nil, nil, template or 'GameFontHighlight')
 			label:SetPoint(...)
 			label:SetText(text)
 
@@ -63,8 +63,8 @@ do
 				insets = {left = 3, right = 3, top = 6, bottom = 6},
 			}
 
-			createSlider = function(name, min, max, cur, ...)
-				local slider = CreateFrame('Slider', nil, self)
+			createSlider = function(parent, name, min, max, cur, ...)
+				local slider = CreateFrame('Slider', nil, parent)
 				slider:SetOrientation'HORIZONTAL'
 				slider:SetPoint(...)
 				slider:SetSize(144, 17)
@@ -75,21 +75,39 @@ do
 				slider:SetMinMaxValues(min, max)
 				slider:SetValue(cur)
 
-				slider.label = createFontString(name, 'GameFontNormalCenter', 'BOTTOM', slider, 'TOP')
-				slider.min = createFontString(min, 'GameFontHighlightSmall', 'TOPLEFT', slider, 'BOTTOMLEFT', -4, 3)
-				slider.max = createFontString(max, 'GameFontHighlightSmall', 'TOPRIGHT', slider, 'BOTTOMRIGHT', 4, 3)
-				slider.current = createFontString(cur, 'GameFontHighlightSmall', 'TOP', slider, 'BOTTOM')
+				slider.label = createFontString(parent, name, 'GameFontHighlightCenter', 'BOTTOM', slider, 'TOP')
+				slider.min = createFontString(parent, min, 'GameFontHighlightSmall', 'TOPLEFT', slider, 'BOTTOMLEFT', 2, 2)
+				slider.max = createFontString(parent, max, 'GameFontHighlightSmall', 'TOPRIGHT', slider, 'BOTTOMRIGHT', -2, 2)
+				slider.current = createFontString(parent, cur, 'GameFontHighlightSmall', 'TOP', slider, 'BOTTOM')
 
 				return slider
 			end
 		end
 
-		local title = createFontString(_NAME, 'GameFontNormalLarge', 'TOPLEFT', 16, -16)
+		local boxBackdrop = {
+			bgFile = [[Interface\ChatFrame\ChatFrameBackground]], tile = true, tileSize = 16,
+			edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]], edgeSize = 16,
+			insets = {left = 4, right = 4, top = 4, bottom = 4},
+		}
+
+		local title = createFontString(self, _NAME, 'GameFontNormalLarge', 'TOPLEFT', 16, -16)
 		title:SetPoint('TOPRIGHT', -16, -16)
 		title:SetJustifyH'LEFT'
 
+		local fontBox = CreateFrame('Frame', nil, self)
+		fontBox:SetBackdrop(boxBackdrop)
+		fontBox:SetBackdropBorderColor(.3, .3, .3)
+		fontBox:SetBackdropColor(.1, .1, .1, .5)
+
+		fontBox:SetHeight(64)
+		fontBox:SetPoint('LEFT', 12, 0)
+		fontBox:SetPoint('RIGHT', -12, 0)
+		fontBox:SetPoint('TOP', title, 'BOTTOM', 0, -32)
+
 		local L = _NS.L
-		local fontSizeTitle = createSlider(L.uiTitleSize, 7, 40, db.fontSizeTitle, 'TOPLEFT', title, 'BOTTOMLEFT', 0, -16)
+		local fontBoxTitle = createFontString(fontBox, L.uiFontSizeTitle, nil, 'BOTTOMLEFT', fontBox, 'TOPLEFT', 6, 0)
+
+		local fontSizeTitle = createSlider(fontBox, L.uiTitleSize, 7, 40, db.fontSizeTitle, 'LEFT', fontBox, 12, 0)
 		fontSizeTitle:SetScript('OnValueChanged', function(self, value)
 			value = math.floor(value + .5)
 
@@ -100,7 +118,7 @@ do
 			Butsu.title:SetFont(font, value, outline)
 		end)
 
-		local fontSizeItem = createSlider(L.uiItemSize, 7, 40, db.fontSizeItem, 'TOPLEFT', fontSizeTitle, 'BOTTOMLEFT', 0, -32)
+		local fontSizeItem = createSlider(fontBox, L.uiItemSize, 7, 40, db.fontSizeItem, 'CENTER')
 		fontSizeItem:SetScript('OnValueChanged', function(self, value)
 			value = math.floor(value + .5)
 
@@ -116,7 +134,7 @@ do
 			Butsu:AnchorSlots()
 		end)
 
-		local fontSizeCount = createSlider(L.uiCountSize, 7, 40, db.fontSizeCount, 'TOPLEFT', fontSizeItem, 'BOTTOMLEFT', 0, -32)
+		local fontSizeCount = createSlider(fontBox, L.uiCountSize, 7, 40, db.fontSizeCount, 'RIGHT', -12, 0)
 		fontSizeCount:SetScript('OnValueChanged', function(self, value)
 			value = math.floor(value + .5)
 
@@ -129,7 +147,19 @@ do
 			end
 		end)
 
-		local iconSize = createSlider(L.uiIconSize, 14, 80, db.iconSize, 'TOPRIGHT', title, 'BOTTOMRIGHT', 0, -16)
+		local settBox = CreateFrame('Frame', nil, self)
+		settBox:SetBackdrop(boxBackdrop)
+		settBox:SetBackdropBorderColor(.3, .3, .3)
+		settBox:SetBackdropColor(.1, .1, .1, .5)
+
+		settBox:SetHeight(64)
+		settBox:SetPoint('LEFT', 12, 0)
+		settBox:SetPoint('RIGHT', -12, 0)
+		settBox:SetPoint('TOP', fontBox, 'BOTTOM', 0, -32)
+
+		local settBoxTitle = createFontString(settBox, L.uiScaleSizeTitle, nil, 'BOTTOMLEFT', settBox, 'TOPLEFT', 6, 0)
+
+		local iconSize = createSlider(settBox, L.uiIconSize, 14, 80, db.iconSize, 'LEFT', 12, 0)
 		iconSize:SetScript('OnValueChanged', function(self, value)
 			value = math.floor(value + .5)
 
@@ -145,7 +175,7 @@ do
 			Butsu:AnchorSlots()
 		end)
 
-		local frameScale = createSlider(L.uiFrameScale, .4, 3, db.frameScale, 'TOPLEFT', iconSize, 'BOTTOMLEFT', 0, -32)
+		local frameScale = createSlider(settBox, L.uiFrameScale, .4, 3, db.frameScale, 'CENTER')
 		frameScale:SetValueStep(.05)
 		frameScale:SetScript('OnValueChanged', function(self, value)
 			value = math.floor(value * 10^2 + .5) / 10^2
