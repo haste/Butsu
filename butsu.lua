@@ -40,35 +40,37 @@ function Butsu:LOOT_OPENED(event, autoloot)
 		for i=1, items do
 			local slot = _NS.slots[i] or _NS.CreateSlot(i)
 			local texture, item, quantity, quality, locked = GetLootSlotInfo(i)
-			local color = ITEM_QUALITY_COLORS[quality]
+			if(texture) then
+				local color = ITEM_QUALITY_COLORS[quality]
 
-			if(LootSlotIsCoin(i)) then
-				item = item:gsub("\n", ", ")
+				if(LootSlotIsCoin(i)) then
+					item = item:gsub("\n", ", ")
+				end
+
+				if(quantity > 1) then
+					slot.count:SetText(quantity)
+					slot.count:Show()
+				else
+					slot.count:Hide()
+				end
+
+				if(quality > 1) then
+					slot.drop:SetVertexColor(color.r, color.g, color.b)
+					slot.drop:Show()
+				else
+					slot.drop:Hide()
+				end
+
+				slot.quality = quality
+				slot.name:SetText(item)
+				slot.name:SetTextColor(color.r, color.g, color.b)
+				slot.icon:SetTexture(texture)
+
+				m = math.max(m, quality)
+
+				slot:Enable()
+				slot:Show()
 			end
-
-			if(quantity > 1) then
-				slot.count:SetText(quantity)
-				slot.count:Show()
-			else
-				slot.count:Hide()
-			end
-
-			if(quality > 1) then
-				slot.drop:SetVertexColor(color.r, color.g, color.b)
-				slot.drop:Show()
-			else
-				slot.drop:Hide()
-			end
-
-			slot.quality = quality
-			slot.name:SetText(item)
-			slot.name:SetTextColor(color.r, color.g, color.b)
-			slot.icon:SetTexture(texture)
-
-			m = math.max(m, quality)
-
-			slot:Enable()
-			slot:Show()
 		end
 	else
 		local slot = _NS.slots[1] or _NS.CreateSlot(1)
