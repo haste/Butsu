@@ -11,15 +11,22 @@ local OnEnter = function(self)
 		GameTooltip:SetLootItem(slot)
 		CursorUpdate(self)
 	end
+	if(self.drop:IsShown()) then
+		local r, g, b = self.drop:GetVertexColor()
+		self.drop:SetVertexColor(r * .6, g * .6, b * .6)
+	else
+		self.drop:SetVertexColor(1, 1, 0)
+	end
 
 	self.drop:Show()
-	self.drop:SetVertexColor(1, 1, 0)
 end
 
 local OnLeave = function(self)
 	if(self.quality > 1) then
 		local color = ITEM_QUALITY_COLORS[self.quality]
 		self.drop:SetVertexColor(color.r, color.g, color.b)
+	elseif(self.isQuestItem) then
+		self.drop:SetVertexColor(1, 1, .2)
 	else
 		self.drop:Hide()
 	end

@@ -72,7 +72,9 @@ function Butsu:LOOT_OPENED(event, autoloot)
 					slot.drop:Hide()
 				end
 
+				slot.isQuestItem = isQuestItem
 				slot.quality = quality
+
 				slot.name:SetText(item)
 				slot.name:SetTextColor(r, g, b)
 				slot.icon:SetTexture(texture)
