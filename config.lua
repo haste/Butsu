@@ -169,6 +169,10 @@ do
 			for _, slot in next, _NS.slots do
 				slot:SetHeight(value)
 				slot.iconFrame:SetSize(value, value)
+
+				slot.quest:SetSize(value * .8, value * .8)
+				slot.quest:ClearAllPoints()
+				slot.quest:SetPoint('BOTTOMLEFT', -value * .15, 0)
 			end
 
 			Butsu:UpdateWidth()

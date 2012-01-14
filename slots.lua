@@ -82,6 +82,13 @@ function _NS.CreateSlot(id)
 	icon:SetAllPoints(iconFrame)
 	frame.icon = icon
 
+	local quest = iconFrame:CreateTexture(nil, 'OVERLAY')
+	quest:SetTexture([[Interface\Minimap\ObjectIcons]])
+	quest:SetTexCoord(1/8, 2/8, 1/8, 2/8)
+	quest:SetSize(iconSize * .8, iconSize * .8)
+	quest:SetPoint('BOTTOMLEFT', -iconSize * .15, 0)
+	frame.quest = quest
+
 	local count = iconFrame:CreateFontString(nil, "OVERLAY")
 	count:SetJustifyH"RIGHT"
 	count:SetPoint("BOTTOMRIGHT", iconFrame, 2, 2)

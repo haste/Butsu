@@ -39,9 +39,10 @@ function Butsu:LOOT_OPENED(event, autoloot)
 	if(items > 0) then
 		for i=1, items do
 			local slot = _NS.slots[i] or _NS.CreateSlot(i)
-			local texture, item, quantity, quality, locked = GetLootSlotInfo(i)
+			local texture, item, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
 			if(texture) then
 				local color = ITEM_QUALITY_COLORS[quality]
+				local r, g, b = color.r, color.g, color.b
 
 				if(LootSlotIsCoin(i)) then
 					item = item:gsub("\n", ", ")
@@ -54,8 +55,18 @@ function Butsu:LOOT_OPENED(event, autoloot)
 					slot.count:Hide()
 				end
 
-				if(quality > 1) then
-					slot.drop:SetVertexColor(color.r, color.g, color.b)
+				if(questId and not isActive) then
+					slot.quest:Show()
+				else
+					slot.quest:Hide()
+				end
+
+				if(quality > 1 or questId or isQuestItem) then
+					if(questId or isQuestItem) then
+						r, g, b = 1, 1, .2
+					end
+
+					slot.drop:SetVertexColor(r, g, b)
 					slot.drop:Show()
 				else
 					slot.drop:Hide()
@@ -63,7 +74,7 @@ function Butsu:LOOT_OPENED(event, autoloot)
 
 				slot.quality = quality
 				slot.name:SetText(item)
-				slot.name:SetTextColor(color.r, color.g, color.b)
+				slot.name:SetTextColor(r, g, b)
 				slot.icon:SetTexture(texture)
 
 				m = math.max(m, quality)
