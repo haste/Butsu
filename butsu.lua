@@ -40,13 +40,16 @@ function Butsu:LOOT_OPENED(event, autoloot)
 		for i=1, items do
 			local slot = _NS.slots[i] or _NS.CreateSlot(i)
 			local texture, item, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
+			local loot_type = GetLootSlotType(i)
 			if(texture) then
 				local color = ITEM_QUALITY_COLORS[quality]
 				local r, g, b = color.r, color.g, color.b
 
-				if(LootSlotIsCoin(i)) then
+				if(loot_type == LOOT_SLOT_MONEY) then
 					item = item:gsub("\n", ", ")
 				end
+
+				self:UpdateSources(GetLootSourceInfo(i))
 
 				if(quantity > 1) then
 					slot.count:SetText(quantity)
@@ -100,10 +103,16 @@ function Butsu:LOOT_OPENED(event, autoloot)
 	end
 	self:AnchorSlots()
 
+	local sources = self:HowManySources()
+	if sources > 1 then
+		self.title:SetText(self.title:GetText() .. ' (+' .. (sources - 1) .. ')')
+	end
+
 	local color = ITEM_QUALITY_COLORS[m]
 	self:SetBackdropBorderColor(color.r, color.g, color.b, .8)
 
 	self:UpdateWidth()
+	self:ClearSources()
 end
 Butsu:RegisterEvent"LOOT_OPENED"
 
@@ -155,5 +164,28 @@ do
 
 		self:ClearAllPoints()
 		self:SetPoint(point, parentName, point, x / scale, y / scale)
+	end
+end
+
+do
+	local loot_sources = {}
+	function Butsu:ClearSources()
+		table.wipe(loot_sources)
+	end
+
+	function Butsu:UpdateSources(...)
+		for i=1, select('#', ...), 2 do
+			local guid = select(i, ...)
+			-- select(i + 1, ...) would say how many items from the current slot are from this GUID
+			loot_sources[guid] = true
+		end
+	end
+
+	function Butsu:HowManySources()
+		local n = 0
+		for guid,_ in pairs(loot_sources) do
+			n = n + 1
+		end
+		return n
 	end
 end

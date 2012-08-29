@@ -6,7 +6,7 @@ _NS.slots = slots
 
 local OnEnter = function(self)
 	local slot = self:GetID()
-	if(LootSlotIsItem(slot)) then
+	if(GetLootSlotType(slot) == LOOT_SLOT_ITEM) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetLootItem(slot)
 		CursorUpdate(self)
