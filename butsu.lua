@@ -40,11 +40,12 @@ function Butsu:LOOT_OPENED(event, autoloot)
 		for i=1, items do
 			local slot = _NS.slots[i] or _NS.CreateSlot(i)
 			local texture, item, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
+			local loot_type = GetLootSlotType(i)
 			if(texture) then
 				local color = ITEM_QUALITY_COLORS[quality]
 				local r, g, b = color.r, color.g, color.b
 
-				if(LootSlotIsCoin(i)) then
+				if(loot_type == LOOT_SLOT_MONEY) then
 					item = item:gsub("\n", ", ")
 				end
 
