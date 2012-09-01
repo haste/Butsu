@@ -44,7 +44,8 @@ function Butsu:LOOT_OPENED(event, autoloot)
 				local color = ITEM_QUALITY_COLORS[quality]
 				local r, g, b = color.r, color.g, color.b
 
-				if(LootSlotIsCoin(i)) then
+				local slotType = GetLootSlotType(i)
+				if(slotType == LOOT_SLOT_MONEY) then
 					item = item:gsub("\n", ", ")
 				end
 
