@@ -39,7 +39,12 @@ function Butsu:LOOT_OPENED(event, autoloot)
 	if(items > 0) then
 		for i=1, items do
 			local slot = _NS.slots[i] or _NS.CreateSlot(i)
-			local texture, item, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
+			local texture, item, quantity, currencyID, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
+
+			if (currencyID) then
+				item, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, item, texture, quality)
+			end
+
 			if(texture) then
 				local color = ITEM_QUALITY_COLORS[quality]
 				local r, g, b = color.r, color.g, color.b
