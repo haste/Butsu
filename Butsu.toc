@@ -1,4 +1,4 @@
-## Interface: 50001
+## Interface: 80000
 ## Title: Butsu
 ## Author: Haste
 ## Version: 2.1.1
