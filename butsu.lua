@@ -1,5 +1,5 @@
 local _NAME, _NS = ...
-local Butsu = CreateFrame("Button", _NAME)
+local Butsu = CreateFrame("Button", _NAME, UIParent, "BackdropTemplate")
 Butsu:Hide()
 
 Butsu:SetScript("OnEvent", function(self, event, ...)

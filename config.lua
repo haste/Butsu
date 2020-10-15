@@ -64,7 +64,7 @@ do
 			}
 
 			createSlider = function(parent, name, min, max, cur, ...)
-				local slider = CreateFrame('Slider', nil, parent)
+				local slider = CreateFrame('Slider', nil, parent, 'BackdropTemplate')
 				slider:SetOrientation'HORIZONTAL'
 				slider:SetPoint(...)
 				slider:SetSize(144, 17)
@@ -94,7 +94,7 @@ do
 		title:SetPoint('TOPRIGHT', -16, -16)
 		title:SetJustifyH'LEFT'
 
-		local fontBox = CreateFrame('Frame', nil, self)
+		local fontBox = CreateFrame('Frame', nil, self, 'BackdropTemplate')
 		fontBox:SetBackdrop(boxBackdrop)
 		fontBox:SetBackdropBorderColor(.3, .3, .3)
 		fontBox:SetBackdropColor(.1, .1, .1, .5)
@@ -147,7 +147,7 @@ do
 			end
 		end)
 
-		local settBox = CreateFrame('Frame', nil, self)
+		local settBox = CreateFrame('Frame', nil, self, 'BackdropTemplate')
 		settBox:SetBackdrop(boxBackdrop)
 		settBox:SetBackdropBorderColor(.3, .3, .3)
 		settBox:SetBackdropColor(.1, .1, .1, .5)
