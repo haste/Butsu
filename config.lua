@@ -38,8 +38,9 @@ do
 	Butsu:SetScript('OnShow', LoadSettings)
 end
 
+local OPTION_CATEGORY
 do
-	local opt = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
+	local opt = CreateFrame("Frame")
 	opt:Hide()
 
 	opt.name = _NAME
@@ -202,12 +203,13 @@ do
 		self:SetScript('OnShow', UpdateSettings)
 	end)
 
-	InterfaceOptions_AddCategory(opt)
+	OPTION_CATEGORY = Settings.RegisterCanvasLayoutCategory(opt, _TITLE)
+	Settings.RegisterAddOnCategory(OPTION_CATEGORY)
 end
 
 do
 	SLASH_BUTSU1 = '/butsu'
 	SlashCmdList['BUTSU'] = function(inp)
-		InterfaceOptionsFrame_OpenToCategory(_NAME)
+		Settings.OpenToCategory(OPTION_CATEGORY:GetID())
 	end
 end
