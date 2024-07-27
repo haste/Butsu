@@ -22,7 +22,7 @@ local OnEnter = function(self)
 end
 
 local OnLeave = function(self)
-	if(self.quality > 1) then
+	if(self.quality and self.quality > 1) then
 		local color = ITEM_QUALITY_COLORS[self.quality]
 		self.drop:SetVertexColor(color.r, color.g, color.b)
 	elseif(self.isQuestItem) then
